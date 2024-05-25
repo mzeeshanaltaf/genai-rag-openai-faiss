@@ -43,6 +43,8 @@ selected = option_menu(
     orientation="horizontal",
 )
 
+llm = ChatOpenAI(openai_api_key=openai_api_key, model="gpt-3.5-turbo")
+
 prompt = ChatPromptTemplate.from_template(
     """
     Answer the question based on the provided context only. If question is not within the context, do not try to answer
@@ -60,7 +62,7 @@ if selected == "PDF Genie":
                                 disabled=not st.session_state.prompt_activation)
     process = st.button("Process", type="primary", key="process", disabled=not pdf_docs)
 
-    llm = ChatOpenAI(openai_api_key=openai_api_key, model="gpt-3.5-turbo")
+
 
     if process:
         with st.spinner("Processing ..."):

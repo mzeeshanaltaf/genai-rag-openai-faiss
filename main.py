@@ -28,7 +28,6 @@ if "total_cost" not in st.session_state:
     st.session_state.total_cost = 0.0
 
 # --- SIDEBAR CONFIGURATION ---
-openai_api_key = 'sk-'
 openai_api_key = sidebar_api_key_configuration()
 
 # --- MAIN PAGE CONFIGURATION ---
@@ -62,11 +61,9 @@ if selected == "PDF Genie":
                                 disabled=not st.session_state.prompt_activation)
     process = st.button("Process", type="primary", key="process", disabled=not pdf_docs)
 
-
-
     if process:
         with st.spinner("Processing ..."):
-            st.session_state.vector_store = create_vectorstore(pdf_docs)
+            st.session_state.vector_store = create_vectorstore(openai_api_key, pdf_docs)
             st.session_state.prompt = True
             st.success('Database is ready')
 

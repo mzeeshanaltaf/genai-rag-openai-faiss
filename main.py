@@ -28,7 +28,7 @@ if "total_cost" not in st.session_state:
     st.session_state.total_cost = 0.0
 
 # --- SIDEBAR CONFIGURATION ---
-api_key = sidebar_api_key_configuration()
+openai_api_key = sidebar_api_key_configuration()
 
 # --- MAIN PAGE CONFIGURATION ---
 st.title("PDF Genie :robot_face:")
@@ -59,7 +59,7 @@ if selected == "PDF Genie":
                                 disabled=not st.session_state.prompt_activation)
     process = st.button("Process", type="primary", key="process", disabled=not pdf_docs)
 
-    llm = ChatOpenAI(openai_api_key=api_key, model="gpt-3.5-turbo")
+    llm = ChatOpenAI(openai_api_key=openai_api_key, model="gpt-3.5-turbo")
 
     if process:
         with st.spinner("Processing ..."):

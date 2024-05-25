@@ -29,9 +29,3 @@ You must have Python 3.9 or later installed. Earlier versions of python may not 
 ![image](https://github.com/mzeeshanaltaf/genai-rag-openai-faiss/assets/154883001/00d2510d-f44d-499b-b3c0-d8b0a57bc007)
 ![image](https://github.com/mzeeshanaltaf/genai-rag-openai-faiss/assets/154883001/118ed182-103d-4474-b49f-71d95162374b)
 ![image](https://github.com/mzeeshanaltaf/genai-rag-openai-faiss/assets/154883001/39f84ae5-0043-4612-8839-51bd02131b9c)
-
-
-
-
-
-

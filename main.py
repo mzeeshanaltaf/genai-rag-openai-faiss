@@ -28,6 +28,7 @@ if "total_cost" not in st.session_state:
     st.session_state.total_cost = 0.0
 
 # --- SIDEBAR CONFIGURATION ---
+openai_api_key = 'sk-'
 openai_api_key = sidebar_api_key_configuration()
 
 # --- MAIN PAGE CONFIGURATION ---

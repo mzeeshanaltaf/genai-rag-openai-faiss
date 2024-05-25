@@ -1,8 +1,8 @@
 from util import *
 from streamlit_option_menu import option_menu
+from streamlit_extras.metric_cards import style_metric_cards
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_groq import ChatGroq
-from dotenv import load_dotenv
+from langchain_openai import ChatOpenAI
 
 # --- PAGE CONFIGURATION ---
 st.set_page_config(page_title="PDF Genie", page_icon=":robot_face:", layout="centered")
@@ -20,28 +20,29 @@ if "chat_history" not in st.session_state:
     st.session_state.chat_history = None
 if "prompt" not in st.session_state:
     st.session_state.prompt = False
-
-load_dotenv()
+if "total_token" not in st.session_state:
+    st.session_state.total_token = 0
+if "successful_requests" not in st.session_state:
+    st.session_state.successful_requests = 0
+if "total_cost" not in st.session_state:
+    st.session_state.total_cost = 0.0
 
 # --- SIDEBAR CONFIGURATION ---
-st.sidebar.header('Configuration')
-openai_api_key, groq_api_key = sidebar_api_key_configuration()
-model = sidebar_groq_model_selection()
+openai_api_key = sidebar_api_key_configuration()
 
 # --- MAIN PAGE CONFIGURATION ---
 st.title("PDF Genie :robot_face:")
 st.write("*Interrogate Documents :books:, Ignite Insights: AI at Your Service*")
-st.write(':blue[***Powered by Groq AI Inference Technology***]')
 
 # ---- NAVIGATION MENU -----
 selected = option_menu(
     menu_title=None,
-    options=["PDF Genie", "Reference", "About"],
-    icons=["robot", "bi-file-text-fill", "app"],  # https://icons.getbootstrap.com
+    options=["PDF Genie", "Analytics", "Reference", "About"],
+    icons=["robot", "bar-chart-fill", "bi-file-text-fill", "app"],  # https://icons.getbootstrap.com
     orientation="horizontal",
 )
 
-llm = ChatGroq(groq_api_key=groq_api_key, model_name=model)
+llm = ChatOpenAI(openai_api_key=openai_api_key, model="gpt-3.5-turbo")
 
 prompt = ChatPromptTemplate.from_template(
     """
@@ -57,7 +58,7 @@ prompt = ChatPromptTemplate.from_template(
 if selected == "PDF Genie":
     st.subheader("Upload PDF(s)")
     pdf_docs = st.file_uploader("Upload your PDFs", type=['pdf'], accept_multiple_files=True,
-                                disabled=not st.session_state.prompt_activation, label_visibility='collapsed')
+                                disabled=not st.session_state.prompt_activation)
     process = st.button("Process", type="primary", key="process", disabled=not pdf_docs)
 
     if process:
@@ -85,6 +86,18 @@ if selected == "PDF Genie":
             st.session_state.messages.append({"role": "assistant", "content": st.session_state.response['answer']})
             st.chat_message("assistant").write(st.session_state.response['answer'])
 
+# ----- SETUP ANALYTICS MENU ------
+if selected == "Analytics":
+    st.title("Analytics")
+    st.write("*This page shows the analytics like total token used, total cost etc.*")
+    st.divider()
+    # Create metrics
+    col1, col2, col3 = st.columns(3)
+    col1.metric("Total Token", f"{st.session_state.total_token}")
+    col2.metric("Total Requests", f"{st.session_state.successful_requests}")
+    col3.metric("Total Cost (USD)", f"${round(st.session_state.total_cost, 6)}")
+    style_metric_cards()
+
 # ----- SETUP REFERENCE MENU ------
 if selected == "Reference":
     st.title("Reference & Context")
@@ -99,20 +112,14 @@ if selected == "About":
         st.markdown(''' This app allows you to chat with your PDF documents. It has following functionality:
 
     - Allows to chat with multiple PDF documents
-    - Support of Groq AI inference technology 
     - Display the response context and document reference
-
+    - Display the analytics
         ''')
     with st.expander("Which Large Language models are supported by this App?"):
-        st.markdown(''' This app supports the following LLMs as supported by Groq:
+        st.markdown(''' This app supports the following LLMs:
 
-    - Chat Models -- Groq
-        - Llama3-8b-8192 
-        - Llama3-70b-8192 
-        - Mixtral-8x7b-32768
-        - Gemma-7b-it
-    - Embeddings -- OpenAI 
-        - Text-embedding-ada-002-v2
+    - Chat Model -- OpenAI gpt-3.5-turbo
+    - Embeddings -- OpenAI Text-embedding-ada-002-v2
         ''')
 
     with st.expander("Which library is used for vectorstore?"):
@@ -121,7 +128,7 @@ if selected == "About":
 
     with st.expander("Where to get the source code of this app?"):
         st.markdown(''' Source code is available at:
-    -  https://github.com/mzeeshanaltaf/genai-rag-groq-faiss
+    *  https://github.com/mzeeshanaltaf/genai-rag-openai-faiss
         ''')
     with st.expander("Whom to contact regarding this app?"):
         st.markdown(''' Contact [Zeeshan Altaf](zeeshan.altaf@gmail.com)

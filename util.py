@@ -43,10 +43,10 @@ def split_data(text):
 
 
 # Create vectorstore
-def create_vectorstore(pdf_docs):
+def create_vectorstore(openai_api_key, pdf_docs):
     raw_text = read_pdf_data(pdf_docs)  # Get PDF text
     text_chunks = split_data(raw_text)  # Get the text chunks
-    embeddings = OpenAIEmbeddings()
+    embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key)
     vectorstore = FAISS.from_texts(texts=text_chunks, embedding=embeddings)
     return vectorstore
 
